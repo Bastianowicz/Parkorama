@@ -11,7 +11,8 @@
                 y: 135
             },
             img : "1.JPG",
-            caption : "Erstes Bild"
+            caption : "Erstes Bild",
+            startDirection:30
         },
         {
             coordinates : {
@@ -19,7 +20,8 @@
                 y: 154
             },
             img : "2.JPG",
-            caption : "Zweites Bild"
+            caption : "Zweites Bild",
+            startDirection:0
         },
         {
             coordinates : {
@@ -27,7 +29,8 @@
                 y: 190
             },
             img : "3.JPG",
-            caption : ""
+            caption : "",
+            startDirection:0
         },
         {
             coordinates : {
@@ -35,7 +38,26 @@
                 y: 129
             },
             img : "4.JPG",
-            caption : ""
+            caption : "",
+            startDirection:0
+        },
+        {
+            coordinates : {
+                x: 2552,
+                y: 89
+            },
+            img : "5.JPG",
+            caption : "",
+            startDirection:0
+        },
+        {
+            coordinates : {
+                x: 2452,
+                y: 119
+            },
+            img : "6.JPG",
+            caption : "",
+            startDirection:0
         },
     ];
 
@@ -187,6 +209,12 @@
         var caption = "";
 
         /**
+         * Richtung, die der Anzeiger haben soll
+         * @type {number}
+         */
+        var startDirection = 0;
+
+        /**
          * Referenz auf den Kartenknoten
          * @type {jQuery}
          */
@@ -201,7 +229,7 @@
             coordinates = config.coordinates;
             imgSrc = "img/panoramas/" + config.img;
             caption = config.caption;
-
+            startDirection = config.startDirection;
             createElement();
 
         };
@@ -241,8 +269,10 @@
             that.$element = $('<a class="node">');
             that.$element.css({
                 top: coordinates.y,
-                left: coordinates.x
+                left: coordinates.x,
+                transform: 'rotate(' + startDirection + 'deg)'
             });
+            that.$element.text('|');
 
             // Panorama-Bild erstellen
             var $img = $('<img>');
@@ -250,7 +280,33 @@
             that.$panoramaImg = $('<div class="panorama-img">');
             that.$panoramaImg.data('i', i);
             that.$panoramaImg.append($img);
+            $caption = $('<span>');
+            $caption.addClass('caption');
+            $caption.text(caption);
+            that.$panoramaImg.append($caption);
             tds.parkorama.$panoramaViewport.append(that.$panoramaImg);
+
+            // Aktive Mausbereiche
+            var $arrowRight = $('<div class="arrow-right">');
+            var $arrowLeft = $('<div class="arrow-left">');
+            $arrowLeft.text('<');
+            $arrowRight.text('>');
+            $arrowRight.mouseover(function(){
+                mouseMove = window.setInterval(function() {
+                    that.moveImgRight();
+                },30);
+            }).mouseleave(function(){
+                clearInterval(mouseMove);
+            });
+            $arrowLeft.mouseover(function(){
+                mouseMove = window.setInterval(function(){
+                    that.moveImgLeft();
+                }, 30);
+            }).mouseleave(function(){
+                clearInterval(mouseMove);
+            });;
+            that.$panoramaImg.append($arrowLeft);
+            that.$panoramaImg.append($arrowRight);
 
             // Bei Klick einblenden
             that.$element.click(function(){
