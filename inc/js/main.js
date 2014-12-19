@@ -47,7 +47,6 @@
                 }
             }
         };
-
         // Call Konstruktor
         init();
     };
