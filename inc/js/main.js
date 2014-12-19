@@ -10,22 +10,46 @@
                 x: 10,
                 y: 10
             },
-            img : "1.jpg",
+            img : "1.JPG",
             caption : "Erstes Bild"
         }
     ];
 
-    /**
-     * Referenz auf alle erstellten Knoten
-     * @type {Array}
-     */
-    var nodes = [];
+
+    var speed = 3;
+
+
+    //----------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------
+
 
     /**
-     *
-     * @constructor
-     */
+    *
+    * @constructor
+    */
     var Parkorama = function(){
+        /**
+         * Referenz auf alle erstellten Knoten
+         * @type {Array}
+         */
+        var nodes = [];
+
+        /**
+         * @type {Parkorama}
+         */
+        var that = this;
+
+        /**
+         * Box, die mit Panoramabildern gefüllt wird
+         * @type {Jquery}
+         */
+        this.$panoramaViewport = {};
+
+        /**
+         * JQuery-Referenz auf Overlay
+         * @type {{}}
+         */
+        var $overlay = {};
 
         /**
          * jQuery Referenz auf Container
@@ -36,19 +60,46 @@
         /**
          * Konstruktor
          */
-        var init = function() {
-            $container = $('#viewport');
+        this.init = function() {
+            $container = $('#map');
+            $overlay = $('#overlay');
+            that.$panoramaViewport = $('#panorama-viewport');
 
             if($container.length > 0) {
                 for(i in Config) {
-                    nodes[i] = new Node( Config[i] );
-
+                    nodes[i] = new Node( Config[i], i );
+                    nodes[i].init();
                     $container.append(nodes[i].$element);
                 }
             }
+
+            $overlay.click(function() {
+                that.fadeOutOverlay();
+            });
         };
-        // Call Konstruktor
-        init();
+
+        /**
+         * Blendet das Overlay ein
+         */
+        this.fadeInOverlay = function(){
+            $overlay.fadeIn(300);
+        }
+
+        /**
+         * Blendet das Overlay aus
+         */
+        this.fadeOutOverlay = function(){
+            $overlay.fadeOut(300);
+        }
+
+        /**
+         * Blendet alle Panoramabilder aus
+         */
+        this.hideAllPanoramas = function() {
+            for(i in nodes) {
+                nodes[i].$panoramaImg.css('display','none');
+            }
+        }
     };
 
 
@@ -57,7 +108,7 @@
      * @param config (Array)
      * @constructor
      */
-    var Node = function( config ) {
+    var Node = function( config, i ) {
         /**
          * @type {Node}
          */
@@ -72,7 +123,7 @@
          * Bildpfad
          * @type {string}
          */
-        var img = "";
+        var imgSrc = "";
 
         /**
          * Bildunterschrift
@@ -80,14 +131,20 @@
          */
         var caption = "";
 
+        /**
+         * Referenz auf den Kartenknoten
+         * @type {jQuery}
+         */
         this.$element = {};
+
+        this.$panoramaImg = {};
 
         /**
          * Konstruktor
          */
-        var init = function() {
+        this.init = function() {
             coordinates = config.coordinates;
-            img = config.img;
+            imgSrc = "img/panoramas/" + config.img;
             caption = config.caption;
 
             createElement();
@@ -95,23 +152,53 @@
         };
 
         /**
+         * Bewegt das PanoramaBild nach links
+         */
+        var moveImgLeft = function(){
+            that.$panoramaImg.marginLeft -= speed;
+        };
+
+        /**
+         * Bewegt das PanoramaBild nach rechts
+         */
+        var moveImgRight = function() {
+            if(that.$panoramaImg.marginLeft <= 0 ) {
+                that.$panoramaImg.marginLeft += speed;
+            }
+        };
+
+        /**
          * Erstellt das jQuery-Element
          */
         var createElement = function() {
+            // Kartenknoten erstellen
             that.$element = $('<a class="node">');
             that.$element.css({
                 top: coordinates.y,
                 left: coordinates.x
             });
-            that.$element.attr('href', config.img);
-        };
 
-        // Call Konstruktor
-        init();
+            // Panorama-Bild erstellen
+            var $img = $('<img>');
+            $img.attr('src', imgSrc);
+            that.$panoramaImg = $('<div class="panorama-img">');
+            that.$panoramaImg.append($img);
+            tds.parkorama.$panoramaViewport.append(that.$panoramaImg);
+
+            // Bei Klick einblenden
+            that.$element.click(function(){
+                tds.parkorama.hideAllPanoramas();
+                that.$panoramaImg.css('display','block');
+                tds.parkorama.fadeInOverlay();
+            });
+        };
     };
 
     $(document).ready(function(){
-        window.tds = {};
-        window.tds.parkorama = new Parkorama();
+        tds = {
+            parkorama : {}
+        };
+        tds.parkorama = new Parkorama();
+        tds.parkorama.init();
     });
 })();
