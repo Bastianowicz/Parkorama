@@ -7,16 +7,40 @@
     var Config = [
         {
             coordinates : {
-                x: 10,
-                y: 10
+                x: 2650,
+                y: 135
             },
             img : "1.JPG",
             caption : "Erstes Bild"
-        }
+        },
+        {
+            coordinates : {
+                x: 2611,
+                y: 154
+            },
+            img : "2.JPG",
+            caption : "Zweites Bild"
+        },
+        {
+            coordinates : {
+                x: 2542,
+                y: 190
+            },
+            img : "3.JPG",
+            caption : ""
+        },
+        {
+            coordinates : {
+                x: 2602,
+                y: 129
+            },
+            img : "4.JPG",
+            caption : ""
+        },
     ];
 
 
-    var speed = 3;
+    var speed = 10;
 
 
     //----------------------------------------------------------------------------------------------------
@@ -76,7 +100,34 @@
             $overlay.click(function() {
                 that.fadeOutOverlay();
             });
+
+            bindKeys();
         };
+
+        /**
+         * Tastaturbefehle
+         */
+        var bindKeys = function(){
+            $(document).keydown(function(e){
+                switch( e.which ){
+                    case 27:
+                        e.preventDefault();
+                        that.fadeOutOverlay();
+                        break;
+                    case 39:
+                        e.preventDefault();
+                        nodes[$('.panorama-img.active').data('i')].moveImgRight();
+                        break;
+                    case 37:
+                        e.preventDefault();
+                        nodes[$('.panorama-img.active').data('i')].moveImgLeft();
+                        break;
+                    default:
+                        console.log(e.which);
+                        break;
+                }
+            });
+        }
 
         /**
          * Blendet das Overlay ein
@@ -97,7 +148,11 @@
          */
         this.hideAllPanoramas = function() {
             for(i in nodes) {
-                nodes[i].$panoramaImg.css('display','none');
+                nodes[i].$panoramaImg.css({
+                    display: 'none',
+                    marginLeft: 0
+                });
+                nodes[i].$panoramaImg.removeClass('active');
             }
         }
     };
@@ -154,16 +209,27 @@
         /**
          * Bewegt das PanoramaBild nach links
          */
-        var moveImgLeft = function(){
-            that.$panoramaImg.marginLeft -= speed;
+        this.moveImgRight = function(){
+            if(parseInt(that.$panoramaImg.css('margin-left')) <= 0 ) {
+                console.log("!");
+                that.$panoramaImg.css('margin-left', function (index, curValue) {
+                    return parseInt(curValue, 10) + speed + 'px';
+                });
+            }
         };
 
         /**
          * Bewegt das PanoramaBild nach rechts
          */
-        var moveImgRight = function() {
-            if(that.$panoramaImg.marginLeft <= 0 ) {
-                that.$panoramaImg.marginLeft += speed;
+        this.moveImgLeft = function() {
+            var margin = parseInt(that.$panoramaImg.css('margin-left'));
+            var imgWidth = parseInt(that.$panoramaImg.children().width());
+            var viewportWidth = parseInt(tds.parkorama.$panoramaViewport.width());
+
+            if(imgWidth + margin > viewportWidth ) {
+                that.$panoramaImg.css('margin-left', function (index, curValue) {
+                    return parseInt(curValue, 10) - speed + 'px';
+                });
             }
         };
 
@@ -182,6 +248,7 @@
             var $img = $('<img>');
             $img.attr('src', imgSrc);
             that.$panoramaImg = $('<div class="panorama-img">');
+            that.$panoramaImg.data('i', i);
             that.$panoramaImg.append($img);
             tds.parkorama.$panoramaViewport.append(that.$panoramaImg);
 
@@ -189,6 +256,7 @@
             that.$element.click(function(){
                 tds.parkorama.hideAllPanoramas();
                 that.$panoramaImg.css('display','block');
+                that.$panoramaImg.addClass('active');
                 tds.parkorama.fadeInOverlay();
             });
         };
