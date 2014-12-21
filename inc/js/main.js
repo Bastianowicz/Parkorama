@@ -237,7 +237,7 @@
         /**
          * Bewegt das PanoramaBild nach links
          */
-        this.moveImgRight = function(){
+        this.moveImgLeft = function(){
             if(parseInt(that.$panoramaImg.css('margin-left')) <= 0 ) {
                 console.log("!");
                 that.$panoramaImg.css('margin-left', function (index, curValue) {
@@ -249,7 +249,7 @@
         /**
          * Bewegt das PanoramaBild nach rechts
          */
-        this.moveImgLeft = function() {
+        this.moveImgRight = function() {
             var margin = parseInt(that.$panoramaImg.css('margin-left'));
             var imgWidth = parseInt(that.$panoramaImg.children().width());
             var viewportWidth = parseInt(tds.parkorama.$panoramaViewport.width());
@@ -266,13 +266,12 @@
          */
         var createElement = function() {
             // Kartenknoten erstellen
-            that.$element = $('<a class="node">');
+            that.$element = $('<a class="node arrow_box">');
             that.$element.css({
                 top: coordinates.y,
                 left: coordinates.x,
                 transform: 'rotate(' + startDirection + 'deg)'
             });
-            that.$element.text('|');
 
             // Panorama-Bild erstellen
             var $img = $('<img>');
