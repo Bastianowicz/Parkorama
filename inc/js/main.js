@@ -1,6 +1,9 @@
 /**
  *
  * Created by Bastian on 19.12.2014.
+ * @todo: newnode()
+ * @todo: moveNode()
+ * @todo: saveNodes()
  */
 
 (function(){
@@ -118,13 +121,54 @@
                     $container.append(nodes[i].$element);
                 }
             }
-
             $overlay.click(function() {
                 that.fadeOutOverlay();
             });
 
             bindKeys();
+
         };
+
+        /**
+         * Neuen Knoten auf der Karte anlegen
+         */
+        this.createNode = function(){
+            var caption = prompt("Welche Beschriftung soll das Bild erhalten?");
+            var img = prompt("Welches Bild im Stammverzeichnis soll verwendet werden?");
+            var newNode = {
+                coordinates : {
+                    x: 100,
+                    y: 100
+                },
+                img : img,
+                caption : caption,
+                startDirection:0
+            };
+
+            var i = Config.push(newNode) - 1;
+            nodes[i] = new Node(Config[i], i);
+            nodes[i].init();
+            nodes[i].startDragging();
+            $container.append(nodes[i].$element);
+        }
+
+        /**
+         * Macht alle Nodes beweglich
+         */
+        this.reorder = function() {
+            for(i in nodes){
+                nodes[i].startDragging();
+            }
+        }
+
+        /**
+         * Beendet das Verschieben von Knoten und speichert die Config
+         */
+        var endDragging = function() {
+            for(i in nodes){
+                nodes[i].stopDragging();
+            }
+        }
 
         /**
          * Tastaturbefehle
@@ -132,6 +176,10 @@
         var bindKeys = function(){
             $(document).keydown(function(e){
                 switch( e.which ){
+                    case 13:
+                        e.preventDefault();
+                        endDragging();
+                        break;
                     case 27:
                         e.preventDefault();
                         that.fadeOutOverlay();
@@ -220,6 +268,10 @@
          */
         this.$element = {};
 
+        /**
+         * Referenz auf das Bild
+         * @type {jQuery}
+         */
         this.$panoramaImg = {};
 
         /**
@@ -233,6 +285,28 @@
             createElement();
 
         };
+
+        /**
+         * Macht das Objekt beweglich mit Jquery-UI
+         */
+        this.startDragging = function(){
+            that.$element.draggable('enable');
+        }
+
+        /**
+         * Beendet das Verschieben
+         */
+        this.stopDragging = function(){
+            that.$element.draggable('disable');
+        }
+
+        /**
+         * Speichert die aktuelle Position im Config-Array
+         */
+        var saveConfig = function() {
+            coordinates = Config[i].coordinates = that.$element.position();
+            Config[i].startDirection = startDirection = that.$element.css('transform').match(/\d{1,3}/);
+        }
 
         /**
          * Bewegt das PanoramaBild nach links
@@ -252,7 +326,7 @@
         this.moveImgRight = function() {
             var margin = parseInt(that.$panoramaImg.css('margin-left'));
             var imgWidth = parseInt(that.$panoramaImg.children().width());
-            var viewportWidth = parseInt(tds.parkorama.$panoramaViewport.width());
+            var viewportWidth = parseInt(bastianowicz.parkorama.$panoramaViewport.width());
 
             if(imgWidth + margin > viewportWidth ) {
                 that.$panoramaImg.css('margin-left', function (index, curValue) {
@@ -283,7 +357,7 @@
             $caption.addClass('caption');
             $caption.text(caption);
             that.$panoramaImg.append($caption);
-            tds.parkorama.$panoramaViewport.append(that.$panoramaImg);
+            bastianowicz.parkorama.$panoramaViewport.append(that.$panoramaImg);
 
             // Aktive Mausbereiche
             var $arrowRight = $('<div class="arrow-right">');
@@ -307,21 +381,39 @@
             that.$panoramaImg.append($arrowLeft);
             that.$panoramaImg.append($arrowRight);
 
+            // Bubbling DOM-Tree Prevention
+            that.$element.mousedown(function(e){
+                return false;
+            });
+
             // Bei Klick einblenden
-            that.$element.click(function(){
-                tds.parkorama.hideAllPanoramas();
+            that.$element.click(function(e){
+                if(that.$element.hasClass('ui-draggable')) {
+                    return false;
+                }
+                bastianowicz.parkorama.hideAllPanoramas();
                 that.$panoramaImg.css('display','block');
                 that.$panoramaImg.addClass('active');
-                tds.parkorama.fadeInOverlay();
+                bastianowicz.parkorama.fadeInOverlay();
+                return false;
             });
+
+            // beweglich machen
+            that.$element.draggable({
+                    stop: function(){
+                        saveConfig();
+                    },
+                    disabled: true
+                }
+            );
         };
     };
 
     $(document).ready(function(){
-        tds = {
-            parkorama : {}
+        if(typeof bastianowicz == 'undefined') bastianowicz = {};
+        bastianowicz = {
+            parkorama : new Parkorama()
         };
-        tds.parkorama = new Parkorama();
-        tds.parkorama.init();
+        bastianowicz.parkorama.init();
     });
 })();

@@ -12,6 +12,14 @@ body,html{
     cursor: hand;
 }
 
+#menu {
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    display: block;
+    padding: 20px;
+    background: rgba(255,255,255,0.8);
+}
 
 a.node {
     position: absolute;
@@ -30,6 +38,10 @@ a.node {
 a.node:hover {
     opacity: 1;
     box-shadow: rgba(196, 255, 205, 0.57) 0 0 3px 3px;
+}
+
+a.node.ui-draggable:not(.ui-draggable-disabled) {
+    background: rgba(0,0,0,0.6);
 }
 #overlay {
     display: none;
