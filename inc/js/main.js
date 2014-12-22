@@ -1,9 +1,6 @@
 /**
  *
  * Created by Bastian on 19.12.2014.
- * @todo: newnode()
- * @todo: moveNode()
- * @todo: saveNodes()
  */
 
 (function(){
@@ -61,7 +58,7 @@
             img : "6.JPG",
             caption : "",
             startDirection:0
-        },
+        }
     ];
 
 
@@ -90,13 +87,13 @@
 
         /**
          * Box, die mit Panoramabildern gefüllt wird
-         * @type {Jquery}
+         * @type {jQuery}
          */
         this.$panoramaViewport = {};
 
         /**
          * JQuery-Referenz auf Overlay
-         * @type {{}}
+         * @type {jQuery}
          */
         var $overlay = {};
 
@@ -130,6 +127,22 @@
         };
 
         /**
+         * Promptet die aktuelle konfiguration
+         */
+        this.copyConfig = function() {
+            var configString = JSON.stringify(Config, undefined, 2);
+            prompt("Kopieren via Strg+C:", configString);
+        };
+
+        /**
+         * Entfernt die Auswahl aktiver Nodes
+         */
+        this.nothingSelected = function() {
+            for(i in nodes){
+                nodes[i].$element.removeClass('active');
+            }
+        }
+        /**
          * Neuen Knoten auf der Karte anlegen
          */
         this.createNode = function(){
@@ -150,7 +163,7 @@
             nodes[i].init();
             nodes[i].startDragging();
             $container.append(nodes[i].$element);
-        }
+        };
 
         /**
          * Macht alle Nodes beweglich
@@ -159,7 +172,7 @@
             for(i in nodes){
                 nodes[i].startDragging();
             }
-        }
+        };
 
         /**
          * Beendet das Verschieben von Knoten und speichert die Config
@@ -168,7 +181,18 @@
             for(i in nodes){
                 nodes[i].stopDragging();
             }
-        }
+        };
+
+        /**
+         * Beendet alle Anpassungen
+         */
+        var endConfig = function() {
+            for(i in nodes){
+                nodes[i].stopDragging();
+                nodes[i].stopRotation();
+            }
+
+        };
 
         /**
          * Tastaturbefehle
@@ -178,7 +202,7 @@
                 switch( e.which ){
                     case 13:
                         e.preventDefault();
-                        endDragging();
+                        endConfig();
                         break;
                     case 27:
                         e.preventDefault();
@@ -186,32 +210,46 @@
                         break;
                     case 39:
                         e.preventDefault();
-                        nodes[$('.panorama-img.active').data('i')].moveImgRight();
+                        var activeImg = $('.panorama-img.active');
+                        if(activeImg.length > 0) {
+                            nodes[activeImg.data('i')].moveImgRight();
+                        } else {
+                            for(i in nodes){
+                                nodes[i].rotate(5);
+                            }
+                        }
                         break;
                     case 37:
                         e.preventDefault();
-                        nodes[$('.panorama-img.active').data('i')].moveImgLeft();
+                        var activeImg = $('.panorama-img.active');
+                        if(activeImg.length > 0) {
+                            nodes[activeImg.data('i')].moveImgLeft();
+                        } else {
+                            for(i in nodes){
+                                nodes[i].rotate(-5);
+                            }
+                        }
                         break;
                     default:
                         console.log(e.which);
                         break;
                 }
             });
-        }
+        };
 
         /**
          * Blendet das Overlay ein
          */
         this.fadeInOverlay = function(){
             $overlay.fadeIn(300);
-        }
+        };
 
         /**
          * Blendet das Overlay aus
          */
         this.fadeOutOverlay = function(){
             $overlay.fadeOut(300);
-        }
+        };
 
         /**
          * Blendet alle Panoramabilder aus
@@ -231,6 +269,7 @@
     /**
      * Repräsentation jedes Knotens
      * @param config (Array)
+     * @param i {int} Stellenreferenz im Nodes-Array
      * @constructor
      */
     var Node = function( config, i ) {
@@ -283,7 +322,6 @@
             caption = config.caption;
             startDirection = config.startDirection;
             createElement();
-
         };
 
         /**
@@ -291,29 +329,28 @@
          */
         this.startDragging = function(){
             that.$element.draggable('enable');
-        }
+        };
 
         /**
          * Beendet das Verschieben
          */
         this.stopDragging = function(){
             that.$element.draggable('disable');
-        }
+        };
 
         /**
          * Speichert die aktuelle Position im Config-Array
          */
         var saveConfig = function() {
             coordinates = Config[i].coordinates = that.$element.position();
-            Config[i].startDirection = startDirection = that.$element.css('transform').match(/\d{1,3}/);
-        }
+            Config[i].startDirection = startDirection = that.getRotationDegrees();
+        };
 
         /**
          * Bewegt das PanoramaBild nach links
          */
         this.moveImgLeft = function(){
             if(parseInt(that.$panoramaImg.css('margin-left')) <= 0 ) {
-                console.log("!");
                 that.$panoramaImg.css('margin-left', function (index, curValue) {
                     return parseInt(curValue, 10) + speed + 'px';
                 });
@@ -334,6 +371,43 @@
                 });
             }
         };
+
+        this.stopRotation = function() {
+            that.$element.removeClass('rotation');
+            saveConfig();
+        };
+
+        /**
+         *  Dreht den Node
+         * @param deg {int} Gradzahl der Drehung
+         */
+        this.rotate = function(deg) {
+            if(that.$element.hasClass('rotation')) {
+                var newRotation = that.getRotationDegrees() + deg;
+                var cssValue = 'rotate(' + newRotation + 'deg)';
+                that.$element.css('transform', cssValue);
+                saveConfig();
+            }
+        };
+
+        /**
+         * Wandelt den transform-String in eine Integer-Zahl um
+         */
+        this.getRotationDegrees = function() {
+            var obj =that.$element;
+            var matrix = obj.css("-webkit-transform") ||
+                obj.css("-moz-transform")    ||
+                obj.css("-ms-transform")     ||
+                obj.css("-o-transform")      ||
+                obj.css("transform");
+            if(matrix !== 'none') {
+                var values = matrix.split('(')[1].split(')')[0].split(',');
+                var a = values[0];
+                var b = values[1];
+                var angle = Math.round(Math.atan2(b, a) * (180/Math.PI));
+            } else { var angle = 0; }
+            return (angle < 0) ? angle +=360 : angle;
+        }
 
         /**
          * Erstellt das jQuery-Element
@@ -377,25 +451,26 @@
                 }, 30);
             }).mouseleave(function(){
                 clearInterval(mouseMove);
-            });;
+            });
             that.$panoramaImg.append($arrowLeft);
             that.$panoramaImg.append($arrowRight);
 
             // Bubbling DOM-Tree Prevention
-            that.$element.mousedown(function(e){
+            that.$element.mousedown(function(){
                 return false;
             });
 
             // Bei Klick einblenden
-            that.$element.click(function(e){
-                if(that.$element.hasClass('ui-draggable')) {
-                    return false;
+            that.$element.click(function(){
+                if(that.$element.hasClass('ui-draggable-disabled')) {
+                    bastianowicz.parkorama.hideAllPanoramas();
+                    that.$panoramaImg.css('display', 'block');
+                    that.$panoramaImg.addClass('active');
+                    bastianowicz.parkorama.fadeInOverlay();
+                } else {
+                    bastianowicz.parkorama.nothingSelected();
+                    that.$element.toggleClass('rotation');
                 }
-                bastianowicz.parkorama.hideAllPanoramas();
-                that.$panoramaImg.css('display','block');
-                that.$panoramaImg.addClass('active');
-                bastianowicz.parkorama.fadeInOverlay();
-                return false;
             });
 
             // beweglich machen
@@ -404,8 +479,7 @@
                         saveConfig();
                     },
                     disabled: true
-                }
-            );
+            });
         };
     };
 
