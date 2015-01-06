@@ -130,6 +130,7 @@
          * Promptet die aktuelle konfiguration
          */
         this.copyConfig = function() {
+            endConfig();
             var configString = JSON.stringify(Config, undefined, 2);
             prompt("Kopieren via Strg+C:", configString);
         };
@@ -190,6 +191,7 @@
             for(i in nodes){
                 nodes[i].stopDragging();
                 nodes[i].stopRotation();
+                nodes[i].
             }
 
         };
@@ -336,6 +338,7 @@
          */
         this.stopDragging = function(){
             that.$element.draggable('disable');
+            saveConfig();
         };
 
         /**
