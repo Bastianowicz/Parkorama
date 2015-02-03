@@ -21,7 +21,7 @@
      * GUI anzeigen?
      * @type {boolean}
      */
-    var showControls = true;
+    var showControls = false;
 
     /**
      * Anordnung der Nodes auf der Karte
