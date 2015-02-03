@@ -4,63 +4,68 @@
  */
 
 (function(){
-    var Config = [
-        {
-            coordinates : {
-                x: 2650,
-                y: 135
-            },
-            img : "1.JPG",
-            caption : "Erstes Bild",
-            startDirection:30
-        },
-        {
-            coordinates : {
-                x: 2611,
-                y: 154
-            },
-            img : "2.JPG",
-            caption : "Zweites Bild",
-            startDirection:0
-        },
-        {
-            coordinates : {
-                x: 2542,
-                y: 190
-            },
-            img : "3.JPG",
-            caption : "",
-            startDirection:0
-        },
-        {
-            coordinates : {
-                x: 2602,
-                y: 129
-            },
-            img : "4.JPG",
-            caption : "",
-            startDirection:0
-        },
-        {
-            coordinates : {
-                x: 2552,
-                y: 89
-            },
-            img : "5.JPG",
-            caption : "",
-            startDirection:0
-        },
-        {
-            coordinates : {
-                x: 2452,
-                y: 119
-            },
-            img : "6.JPG",
-            caption : "",
-            startDirection:0
-        }
-    ];
-
+    var Config =
+            [{
+                "coordinates": {"top": 312.683349609375, "left": 1371.683349609375},
+                "img": "park-entrance.jpg",
+                "caption": "Erstes Bild",
+                "startDirection": 90
+            }, {
+                "coordinates": {"top": 297.3000030517578, "left": 1227.300048828125},
+                "img": "2.jpg",
+                "caption": "",
+                "startDirection": 305
+            }, {
+                "coordinates": {"top": 230.60000610351562, "left": 1194.5999755859375},
+                "img": "3.jpg",
+                "caption": "",
+                "startDirection": 115
+            }, {
+                "coordinates": {"top": 375.8666687011719, "left": 1227.86669921875},
+                "img": "4.jpg",
+                "caption": "",
+                "startDirection": 115
+            }, {
+                "coordinates": {"top": 463.58331298828125, "left": 942.5833129882812},
+                "img": "5.jpg",
+                "caption": "",
+                "startDirection": 65
+            }, {
+                "coordinates": {"top": 349.566650390625, "left": 957.566650390625},
+                "img": "6.jpg",
+                "caption": "",
+                "startDirection": 150
+            }, {
+                "coordinates": {"top": 601.7166748046875, "left": 958.7166748046875},
+                "img": "7.jpg",
+                "caption": "",
+                "startDirection": 300
+            }, {
+                "coordinates": {"top": 518.7333374023438, "left": 807.7333374023438},
+                "img": "8.jpg",
+                "caption": "",
+                "startDirection": 155
+            }, {
+                "coordinates": {"top": 491.0333251953125, "left": 577.0333251953125},
+                "img": "9.jpg",
+                "caption": "",
+                "startDirection": 200
+            }, {
+                "coordinates": {"top": 285.0500030517578, "left": 411.04998779296875},
+                "img": "10.jpg",
+                "caption": "",
+                "startDirection": 80
+            }, {
+                "coordinates": {"top": 260.68333435058594, "left": 808.683349609375},
+                "img": "11.jpg",
+                "caption": "",
+                "startDirection": 85
+            }, {"coordinates": {"top": 463, "left": 768},
+                "img": "12.jpg",
+                "caption": "",
+                "startDirection": 90
+            }]
+        ;
 
     var speed = 10;
 
@@ -142,7 +147,7 @@
             for(i in nodes){
                 nodes[i].$element.removeClass('active');
             }
-        }
+        };
         /**
          * Neuen Knoten auf der Karte anlegen
          */
@@ -191,7 +196,6 @@
             for(i in nodes){
                 nodes[i].stopDragging();
                 nodes[i].stopRotation();
-                nodes[i].
             }
 
         };
@@ -216,6 +220,7 @@
                         if(activeImg.length > 0) {
                             nodes[activeImg.data('i')].moveImgRight();
                         } else {
+                            console.log("!");
                             for(i in nodes){
                                 nodes[i].rotate(5);
                             }
@@ -250,6 +255,7 @@
          * Blendet das Overlay aus
          */
         this.fadeOutOverlay = function(){
+            that.hideAllPanoramas();
             $overlay.fadeOut(300);
         };
 
@@ -385,7 +391,9 @@
          * @param deg {int} Gradzahl der Drehung
          */
         this.rotate = function(deg) {
+            console.log("?");
             if(that.$element.hasClass('rotation')) {
+                console.log("!");
                 var newRotation = that.getRotationDegrees() + deg;
                 var cssValue = 'rotate(' + newRotation + 'deg)';
                 that.$element.css('transform', cssValue);
@@ -419,8 +427,8 @@
             // Kartenknoten erstellen
             that.$element = $('<a class="node arrow_box">');
             that.$element.css({
-                top: coordinates.y,
-                left: coordinates.x,
+                top: coordinates.top,
+                left: coordinates.left,
                 transform: 'rotate(' + startDirection + 'deg)'
             });
 
