@@ -17,7 +17,7 @@ body,html{
     position: fixed;
     right: 10px;
     bottom: 10px;
-    display: block;
+    display: none;
     padding: 20px;
     background: rgba(255,255,255,0.9);
     border-radius: 20px;

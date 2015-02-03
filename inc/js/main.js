@@ -1,9 +1,32 @@
 /**
+ * Der Park von Wurzen mit klickbaren Punkten, an denen Panorama-Bilder angezeigt werden
  *
  * Created by Bastian on 19.12.2014.
+ * @todo: delete Nodes
+ * @todo: Move Node by Arrow Keys / Rotate by Arrow Keys (States)
+ * @todo: Better JSON-Output
+ * @todo: Control-Help
+ * @FIXME: Nodes move slightly up after saving new order
  */
 
 (function(){
+
+    /**
+     * Scrollgeschwindigkeit der Panorama-Bilder
+     * @type {number}
+     */
+    var speed = 15;
+
+    /**
+     * GUI anzeigen?
+     * @type {boolean}
+     */
+    var showControls = true;
+
+    /**
+     * Anordnung der Nodes auf der Karte
+     * @type {{coordinates: {top: number, left: number}, img: string, caption: string, startDirection: number}[]}
+     */
     var Config =
             [{
                 "coordinates": {"top": 312.683349609375, "left": 1371.683349609375},
@@ -67,9 +90,6 @@
             }]
         ;
 
-    var speed = 10;
-
-
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
 
@@ -112,6 +132,9 @@
          * Konstruktor
          */
         this.init = function() {
+            if(showControls) {
+                $('#menu').fadeIn(2000);
+            }
             $container = $('#map');
             $overlay = $('#overlay');
             that.$panoramaViewport = $('#panorama-viewport');
