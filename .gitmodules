@@ -1,0 +1,3 @@
+[submodule "vendor/drag_n_scroll"]
+	path = vendor/drag_n_scroll
+	url = https://github.com/Bastianowicz/drag_n_scroll.git
