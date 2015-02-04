@@ -382,26 +382,16 @@
          * Bewegt das PanoramaBild nach links
          */
         this.moveImgLeft = function(){
-            if(parseInt(that.$panoramaImg.css('margin-left')) <= 0 ) {
-                that.$panoramaImg.css('margin-left', function (index, curValue) {
-                    return parseInt(curValue, 10) + speed + 'px';
-                });
-            }
+            var oldScroll = that.$panoramaImg.scrollLeft();
+            that.$panoramaImg.scrollLeft(oldScroll - 10);
         };
 
         /**
          * Bewegt das PanoramaBild nach rechts
          */
         this.moveImgRight = function() {
-            var margin = parseInt(that.$panoramaImg.css('margin-left'));
-            var imgWidth = parseInt(that.$panoramaImg.children().width());
-            var viewportWidth = parseInt(bastianowicz.parkorama.$panoramaViewport.width());
-
-            if(imgWidth + margin > viewportWidth ) {
-                that.$panoramaImg.css('margin-left', function (index, curValue) {
-                    return parseInt(curValue, 10) - speed + 'px';
-                });
-            }
+            var oldScroll = that.$panoramaImg.scrollLeft();
+            that.$panoramaImg.scrollLeft(oldScroll + 10);
         };
 
         this.stopRotation = function() {
@@ -465,6 +455,16 @@
             $caption.addClass('caption');
             $caption.text(caption);
             that.$panoramaImg.append($caption);
+            that.$panoramaImg.click(function(){
+                return false;
+            })
+
+            // drag_n_scroll auf Bild anwenden
+            var draggable = new bastianowicz.Drag_n_Scroll();
+            draggable.$context = that.$panoramaImg;
+            draggable.init();
+
+            // Bild hinzufügen
             bastianowicz.parkorama.$panoramaViewport.append(that.$panoramaImg);
 
             // Aktive Mausbereiche
@@ -519,9 +519,7 @@
 
     $(document).ready(function(){
         if(typeof bastianowicz == 'undefined') bastianowicz = {};
-        bastianowicz = {
-            parkorama : new Parkorama()
-        };
+        bastianowicz.parkorama = new Parkorama();
         bastianowicz.parkorama.init();
     });
 })();
