@@ -10,6 +10,9 @@ A little peace of code for showing panoramas on a map. It is more of a beta at t
 - copy config-JSON to paste in Javascript-file to save new or edited nodes
 - drag & scroll on map and panoramas
 
+## Demo
+http://bastianowicz.github.io/Parkorama/
+
 ## Usage
 just clone the repo and edit everything for your needs. Replace the map and add your own nodes. 
 Currently it shows panoramas of the city-park in Wurzen, Germany.
