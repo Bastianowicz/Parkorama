@@ -476,14 +476,14 @@
                 mouseMove = window.setInterval(function() {
                     that.moveImgRight();
                 },30);
-            }).mouseleave(function(){
+            }).mouseout(function(){
                 clearInterval(mouseMove);
             });
             $arrowLeft.mouseover(function(){
                 mouseMove = window.setInterval(function(){
                     that.moveImgLeft();
                 }, 30);
-            }).mouseleave(function(){
+            }).mouseout(function(){
                 clearInterval(mouseMove);
             });
             that.$panoramaImg.append($arrowLeft);
