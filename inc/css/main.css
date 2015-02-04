@@ -64,6 +64,7 @@ a.node.rotation {
     top: 0;
     left:0;
     background: rgba(0,0,0,0.8);
+    cursor: pointer;
 }
 
 
@@ -97,6 +98,24 @@ a.node.rotation {
     font-weight: bold;
     left: 50px;
     bottom: 30px;
+}
+.panorama-arrow{
+    background-color: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.9);
+    font-size: 60px;
+    font-family: monospace;
+    text-shadow: 0px 0px 3px black;
+    cursor: pointer;
+    display: table-cell;
+    vertical-align: middle;
+    padding-left:5px;
+}
+.panorama-arrow:hover{
+    background-color: rgba(255,255,255,0.3);
+}
+.panorama-arrow > p{
+    position: absolute;
+    top: 30%;
 }
 
 .arrow-left{

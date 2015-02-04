@@ -468,10 +468,10 @@
             bastianowicz.parkorama.$panoramaViewport.append(that.$panoramaImg);
 
             // Aktive Mausbereiche
-            var $arrowRight = $('<div class="arrow-right">');
-            var $arrowLeft = $('<div class="arrow-left">');
-            $arrowLeft.text('<');
-            $arrowRight.text('>');
+            var $arrowRight = $('<div class="panorama-arrow arrow-right">');
+            var $arrowLeft = $('<div class="panorama-arrow arrow-left">');
+            $arrowLeft.append($('<p><</p>'));
+            $arrowRight.append($('<p>></p>'));
             $arrowRight.mouseover(function(){
                 mouseMove = window.setInterval(function() {
                     that.moveImgRight();
